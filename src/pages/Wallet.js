@@ -4,6 +4,7 @@ import React from 'react';
 import Header from '../components/Header';
 // import getCurrence from '../services/requestAPI';
 import { currencyCreator } from '../actions';
+import Control from '../components/Control';
 
 class Wallet extends React.Component {
   componentDidMount = async () => {
@@ -13,7 +14,10 @@ class Wallet extends React.Component {
 
   render() {
     return (
-      <Header />
+      <>
+        <Header />
+        <Control />
+      </>
     );
   }
 }
