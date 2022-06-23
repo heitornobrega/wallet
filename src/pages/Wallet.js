@@ -5,13 +5,13 @@ import { currencyCreator, expensesCreator } from '../actions';
 
 class Wallet extends React.Component {
   state = {
+    id: 0,
     value: '',
     description: '',
     currency: 'USD',
     method: '',
     tag: '',
-    // exchangeRates: () => getExchangeRates(),
-    // id: () => updateId(),
+    exchangeRates: {},
   }
 
   componentDidMount = async () => {
@@ -19,9 +19,11 @@ class Wallet extends React.Component {
     await currencyCreator(dispatch);
   }
 
-  // handleClick = () => {
-  //   console.log('oi');
-  // }
+  handleClick = (disp, state) => {
+    let { id } = this.state;
+    this.setState({ id: id += 1 });
+    disp(expensesCreator(state));
+  }
 
   handleChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
@@ -115,7 +117,7 @@ class Wallet extends React.Component {
           </label>
           <button
             type="button"
-            onClick={ () => dispatch(expensesCreator([this.state])) }
+            onClick={ () => this.handleClick(dispatch, this.state) }
           >
             Adicionar despesa
           </button>

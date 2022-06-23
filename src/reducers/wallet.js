@@ -18,7 +18,7 @@ const wallet = (state = INITIAL_STATE, action) => {
   case FETCH_CURRENCY_FAIL:
     return { ...state, currencies: action.error };
   case ADD_EXPENSES:
-    return { ...state, expenses: action.expenses };
+    return { ...state, expenses: [...state.expenses, action.expenses] };
   default:
     return state;
   }

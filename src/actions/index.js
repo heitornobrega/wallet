@@ -33,3 +33,11 @@ export const expensesCreator = (expenses) => ({
   type: ADD_EXPENSES,
   expenses,
 });
+
+// export const expensesCreator2 = async (dispatch) => {
+//   try {
+//     const resultOfRequest = await getCurrencies();
+//     return dispatch(expensesCreator(expenses))
+//   } catch (error) {
+//   }
+// }
