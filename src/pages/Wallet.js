@@ -10,8 +10,8 @@ class Wallet extends React.Component {
     currency: 'USD',
     method: '',
     tag: '',
-    // exchangeRates: {},
-    // id: '',
+    // exchangeRates: () => getExchangeRates(),
+    // id: () => updateId(),
   }
 
   componentDidMount = async () => {
@@ -127,7 +127,7 @@ class Wallet extends React.Component {
 
 Wallet.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  currencies: PropTypes.arrayOf(PropTypes.string).isRequired,
+  currencies: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
   email: PropTypes.string.isRequired,
 };
 
