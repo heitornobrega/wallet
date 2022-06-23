@@ -3,6 +3,7 @@ import getCurrencies from '../services/requestAPI';
 export const LOGIN = 'LOGIN';
 export const FETCH_CURRENCY_SUCCESS = 'FETCH_CURRENCY_SUCCESS';
 export const FETCH_CURRENCY_FAIL = 'FETCH_CURRENCY_FAIL';
+export const ADD_EXPENSES = 'ADD_EXPENSES';
 
 export const loginCreator = (userData) => ({
   type: LOGIN,
@@ -27,3 +28,8 @@ export const currencyCreator = async (dispatch) => {
     return dispatch(fetchCurrencyFail(error));
   }
 };
+
+export const expensesCreator = (expenses) => ({
+  type: ADD_EXPENSES,
+  expenses,
+});
