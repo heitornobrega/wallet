@@ -11,6 +11,11 @@ const filterCurrencies = (action) => {
   ];
 };
 
+const filterExchangeData = (action) => {
+  delete action.expenses.exchangeRates.USDT;
+  return action.expenses;
+};
+
 const wallet = (state = INITIAL_STATE, action) => {
   switch (action.type) {
   case FETCH_CURRENCY_SUCCESS:
@@ -18,7 +23,7 @@ const wallet = (state = INITIAL_STATE, action) => {
   case FETCH_CURRENCY_FAIL:
     return { ...state, currencies: action.error };
   case ADD_EXPENSES:
-    return { ...state, expenses: [...state.expenses, action.expenses] };
+    return { ...state, expenses: [...state.expenses, filterExchangeData(action)] };
   default:
     return state;
   }

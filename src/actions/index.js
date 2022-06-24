@@ -29,15 +29,16 @@ export const currencyCreator = async (dispatch) => {
   }
 };
 
-export const expensesCreator = (expenses) => ({
+export const fetchCurrenciesAndGetState = (exchangeRates, state) => ({
   type: ADD_EXPENSES,
-  expenses,
+  expenses: { ...state, exchangeRates },
 });
 
-// export const expensesCreator2 = async (dispatch) => {
-//   try {
-//     const resultOfRequest = await getCurrencies();
-//     return dispatch(expensesCreator(expenses))
-//   } catch (error) {
-//   }
-// }
+export const expensesCreator = async (dispatch, state) => {
+  try {
+    const resultOfRequest = await getCurrencies();
+    return dispatch(fetchCurrenciesAndGetState(resultOfRequest, state));
+  } catch (error) {
+    return dispatch(fetchCurrencyFail(error));
+  }
+};

@@ -11,7 +11,7 @@ class Wallet extends React.Component {
     currency: 'USD',
     method: '',
     tag: '',
-    exchangeRates: {},
+    totalValue: 0,
   }
 
   componentDidMount = async () => {
@@ -19,19 +19,33 @@ class Wallet extends React.Component {
     await currencyCreator(dispatch);
   }
 
-  handleClick = (disp, state) => {
+  handleClick = async (state) => {
     let { id } = this.state;
+    const { dispatch } = this.props;
     this.setState({ id: id += 1 });
-    disp(expensesCreator(state));
+    await expensesCreator(dispatch, state);
+    this.setState({ value: '' });
+    this.updateTotalValue();
   }
 
   handleChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   }
 
+  updateTotalValue = () => {
+    const { expenses } = this.props;
+    const { totalValue } = this.state;
+    const currentId = expenses.length - 1;
+    const selectedCurrency = expenses[currentId].currency;
+    const expenseBRLValue = parseFloat(expenses[currentId].value);
+    const actualAsk = parseFloat(expenses[currentId].exchangeRates[selectedCurrency].ask);
+    const currentValue = expenseBRLValue * actualAsk;
+    this.setState({ totalValue: totalValue + currentValue });
+  }
+
   render() {
-    const { currencies, email, dispatch } = this.props;
-    const { value, description, currency, method, tag } = this.state;
+    const { currencies, email } = this.props;
+    const { id, value, description, currency, method, tag, totalValue } = this.state;
     return (
       <>
         <header>
@@ -39,7 +53,7 @@ class Wallet extends React.Component {
             {email}
           </span>
           <span data-testid="total-field">
-            0
+            {parseFloat(totalValue).toFixed(2)}
           </span>
           <span data-testid="header-currency-field">
             BRL
@@ -94,9 +108,9 @@ class Wallet extends React.Component {
               data-testid="method-input"
               onChange={ this.handleChange }
             >
-              <option value="dinheiro">Dinheiro</option>
-              <option value="crédito">Cartão de crédito</option>
-              <option value="débito">Cartão de débito</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Cartão de crédito">Cartão de crédito</option>
+              <option value="Cartão de débito">Cartão de débito</option>
             </select>
           </label>
           <label htmlFor="tag-input">
@@ -108,16 +122,18 @@ class Wallet extends React.Component {
               data-testid="tag-input"
               onChange={ this.handleChange }
             >
-              <option value="alimentacao">Alimentação</option>
-              <option value="lazer">Lazer</option>
-              <option value="trabalho">Trabalho</option>
+              <option value="Alimentação">Alimentação</option>
+              <option value="Lazer">Lazer</option>
+              <option value="Trabalho">Trabalho</option>
               <option value="transporte">Transporte</option>
-              <option value="saude">Saúde</option>
+              <option value="Saúde">Saúde</option>
             </select>
           </label>
           <button
             type="button"
-            onClick={ () => this.handleClick(dispatch, this.state) }
+            onClick={ () => this.handleClick(
+              { id, value, description, currency, method, tag },
+            ) }
           >
             Adicionar despesa
           </button>
@@ -130,12 +146,14 @@ class Wallet extends React.Component {
 Wallet.propTypes = {
   dispatch: PropTypes.func.isRequired,
   currencies: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+  expenses: PropTypes.arrayOf(PropTypes.any.isRequired).isRequired,
   email: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   currencies: state.wallet.currencies,
   email: state.user.email,
+  expenses: state.wallet.expenses,
 });
 
 export default connect(mapStateToProps)(Wallet);
