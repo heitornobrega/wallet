@@ -15,6 +15,18 @@ const filterExchangeData = (action) => {
   return action.expenses;
 };
 
+// const filterExchangeData = (action, state) => {
+//   delete action.expenses.exchangeRates.USDT;
+//   const fakeExpenses = [...state.expenses, action.expenses];
+//   const soma = fakeExpenses.reduce((acc, occ) => {
+//     const qualquer = occ.value * occ.exchangeRates[occ.currencies].ask;
+//     acc += qualquer;
+//     return acc;
+//   }, 0);
+//   const payload = { action: action.expenses, soma };
+//   return payload;
+// };
+
 const removeExpense = (state, action) => {
   const { expenses } = state;
   const noItem = expenses.filter((expense) => expense.id !== Number(action.expenseId));

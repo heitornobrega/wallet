@@ -11,12 +11,21 @@ class Wallet extends React.Component {
     currency: 'USD',
     method: 'Dinheiro',
     tag: 'Alimentação',
-    totalValue: 0,
+    totalValue: '',
   }
 
   componentDidMount = async () => {
     const { dispatch } = this.props;
     await currencyCreator(dispatch);
+  }
+
+  initialTotalValue = () => {
+    const { expenses } = this.props;
+    const totalValue = expenses.reduce((acc, occ) => {
+      acc += parseFloat(occ.value) * parseFloat(occ.exchangeRates[occ.currency].ask);
+      return acc;
+    }, 0);
+    return totalValue;
   }
 
   handleClick = async (state) => {
@@ -47,13 +56,12 @@ class Wallet extends React.Component {
     const { dispatch } = this.props;
     const { totalValue } = this.state;
     dispatch(dispatchDeleteExpense(e.target.id));
-    console.log(e.target.value);
     this.setState({ totalValue: Number(totalValue) - Number(e.target.value) });
   }
 
   render() {
     const { currencies, email, expenses } = this.props;
-    const { id, value, description, currency, method, tag, totalValue } = this.state;
+    const { id, value, description, currency, method, tag } = this.state;
     return (
       <>
         <header>
@@ -61,7 +69,7 @@ class Wallet extends React.Component {
             {email}
           </span>
           <div data-testid="total-field">
-            {parseFloat(totalValue).toFixed(2)}
+            {this.initialTotalValue().toFixed(2)}
           </div>
           <span data-testid="header-currency-field">
             BRL
