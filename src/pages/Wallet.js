@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import React from 'react';
-import { currencyCreator, expensesCreator } from '../actions';
+import { currencyCreator, expensesCreator, dispatchDeleteExpense } from '../actions';
 
 class Wallet extends React.Component {
   state = {
@@ -43,6 +43,14 @@ class Wallet extends React.Component {
     this.setState({ totalValue: totalValue + currentValue });
   }
 
+  deleteExpense = (e) => {
+    const { dispatch } = this.props;
+    const { totalValue } = this.state;
+    dispatch(dispatchDeleteExpense(e.target.id));
+    console.log(e.target.value);
+    this.setState({ totalValue: Number(totalValue) - Number(e.target.value) });
+  }
+
   render() {
     const { currencies, email, expenses } = this.props;
     const { id, value, description, currency, method, tag, totalValue } = this.state;
@@ -52,9 +60,9 @@ class Wallet extends React.Component {
           <span data-testid="email-field">
             {email}
           </span>
-          <span data-testid="total-field">
+          <div data-testid="total-field">
             {parseFloat(totalValue).toFixed(2)}
-          </span>
+          </div>
           <span data-testid="header-currency-field">
             BRL
           </span>
@@ -141,69 +149,45 @@ class Wallet extends React.Component {
         <table>
           <thead>
             <tr>
-              <th>
-                Descrição
-              </th>
-              <th>
-                Tag
-              </th>
-              <th>
-                Método de pagamento
-              </th>
-              <th>
-                Valor
-              </th>
-              <th>
-                Moeda
-              </th>
-              <th>
-                Câmbio utilizado
-              </th>
-              <th>
-                Valor convertido
-              </th>
-              <th>
-                Moeda de conversão
-              </th>
-              <th>
-                Editar/Excluir
-              </th>
+              <th>Descrição</th>
+              <th>Tag</th>
+              <th>Método de pagamento</th>
+              <th>Valor</th>
+              <th>Moeda</th>
+              <th>Câmbio utilizado</th>
+              <th>Valor convertido</th>
+              <th>Moeda de conversão</th>
+              <th>Editar/Excluir</th>
             </tr>
           </thead>
           <tbody>
             {expenses.length > 0 && (expenses.map((expense) => (
               <tr key={ expense.id }>
+                <td>{expense.description}</td>
+                <td>{expense.tag}</td>
+                <td>{expense.method}</td>
+                <td>{Number(expense.value).toFixed(2)}</td>
+                <td>{(expense.exchangeRates[expense.currency].name).split('/')[0]}</td>
+                <td>{Number(expense.exchangeRates[expense.currency].ask).toFixed(2)}</td>
                 <td>
-                  {expense.description}
+                  {(Number(expense.exchangeRates[expense.currency].ask)
+                  * Number(expense.value)).toFixed(2)}
                 </td>
-                <td>
-                  {expense.tag}
-                </td>
-                <td>
-                  {expense.method}
-                </td>
-                <td>
-                  {Number(expense.value).toFixed(2)}
-                </td>
-
-                <td>
-                  {(expense.exchangeRates[expense.currency].name).split('/')[0]}
-                </td>
-                <td>
-                  {Number(expense.exchangeRates[expense.currency].ask).toFixed(2)}
-                </td>
-                <td>
-                  {
-                    (Number(expense.exchangeRates[expense.currency].ask)
-                    * Number(expense.value)).toFixed(2)
-                  }
-                </td>
-                <td>
-                  Real
-                </td>
+                <td>Real</td>
                 <td>
                   <button type="button">Editar</button>
-                  <button type="button">Excluir</button>
+                  <button
+                    data-testid="delete-btn"
+                    type="button"
+                    id={ expense.id }
+                    onClick={ this.deleteExpense }
+                    value={
+                      (Number(expense.exchangeRates[expense.currency].ask)
+                    * Number(expense.value))
+                    }
+                  >
+                    Excluir
+                  </button>
                 </td>
               </tr>)))}
           </tbody>
@@ -212,14 +196,12 @@ class Wallet extends React.Component {
     );
   }
 }
-
 Wallet.propTypes = {
   dispatch: PropTypes.func.isRequired,
   currencies: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
   expenses: PropTypes.arrayOf(PropTypes.any.isRequired).isRequired,
   email: PropTypes.string.isRequired,
 };
-
 const mapStateToProps = (state) => ({
   currencies: state.wallet.currencies,
   email: state.user.email,
