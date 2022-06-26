@@ -1,6 +1,6 @@
 import {
   FETCH_CURRENCY_SUCCESS,
-  FETCH_CURRENCY_FAIL, ADD_EXPENSES, REMOVE_EXPENSE,
+  FETCH_CURRENCY_FAIL, ADD_EXPENSES, REMOVE_EXPENSE, EDIT_EXPENSE,
 } from '../actions';
 
 const INITIAL_STATE = { currencies: [], expenses: [] };
@@ -15,22 +15,20 @@ const filterExchangeData = (action) => {
   return action.expenses;
 };
 
-// const filterExchangeData = (action, state) => {
-//   delete action.expenses.exchangeRates.USDT;
-//   const fakeExpenses = [...state.expenses, action.expenses];
-//   const soma = fakeExpenses.reduce((acc, occ) => {
-//     const qualquer = occ.value * occ.exchangeRates[occ.currencies].ask;
-//     acc += qualquer;
-//     return acc;
-//   }, 0);
-//   const payload = { action: action.expenses, soma };
-//   return payload;
-// };
-
-const removeExpense = (state, action) => {
+const removeExpense = (action, state) => {
   const { expenses } = state;
   const noItem = expenses.filter((expense) => expense.id !== Number(action.expenseId));
   return [...noItem];
+};
+
+const updateExpense = (action, state) => {
+  const arr = state.expenses.map((expense) => {
+    if (expense.id === action.expenseId) {
+      expense = action.editedExpense;
+    }
+    return expense;
+  });
+  return arr;
 };
 
 const wallet = (state = INITIAL_STATE, action) => {
@@ -42,7 +40,9 @@ const wallet = (state = INITIAL_STATE, action) => {
   case ADD_EXPENSES:
     return { ...state, expenses: [...state.expenses, filterExchangeData(action)] };
   case REMOVE_EXPENSE:
-    return { ...state, expenses: removeExpense(state, action) };
+    return { ...state, expenses: removeExpense(action, state) };
+  case EDIT_EXPENSE:
+    return { ...state, expenses: updateExpense(action, state) };
   default:
     return state;
   }

@@ -5,6 +5,7 @@ export const FETCH_CURRENCY_SUCCESS = 'FETCH_CURRENCY_SUCCESS';
 export const FETCH_CURRENCY_FAIL = 'FETCH_CURRENCY_FAIL';
 export const ADD_EXPENSES = 'ADD_EXPENSES';
 export const REMOVE_EXPENSE = 'REMOVE_EXPENSE';
+export const EDIT_EXPENSE = 'EDIT_EXPENSE';
 
 export const loginCreator = (userData) => ({
   type: LOGIN,
@@ -45,5 +46,11 @@ export const expensesCreator = async (dispatch, state) => {
 };
 export const dispatchDeleteExpense = (expenseId) => ({
   type: REMOVE_EXPENSE,
+  expenseId,
+});
+
+export const editExpense = (editedExpense, expenseId) => ({
+  type: EDIT_EXPENSE,
+  editedExpense,
   expenseId,
 });
